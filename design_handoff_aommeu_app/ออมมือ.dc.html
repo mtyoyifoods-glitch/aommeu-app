@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ออมมือ">
+<meta name="theme-color" content="#0B0B0C">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; }
+  .stage{ min-height:100vh; width:100%; display:flex; align-items:stretch; justify-content:center; background:#08090a; font-family:'IBM Plex Sans Thai',sans-serif; }
+  .num{ font-family:'Space Grotesk',sans-serif; }
+  .app{ --bg:#0B0B0C; --surface:#141416; --border:#1f1f22; --text:#F2F2F0; --mute:#8d8d92; --faint:#6e6e72; --accent:#C8F751; --onAccent:#0B0B0C; --track:#222226; --warm:#C8F751; --ringTrack:#1b1b1e; --card2:#101012;
+    width:100%; max-width:440px; min-height:100vh; min-height:100dvh; position:relative; background:var(--bg); overflow:hidden; }
+  .app.sage{ --bg:#EBEEE4; --surface:#FFFFFF; --border:rgba(0,0,0,.06); --text:#2E332B; --mute:#7c8473; --faint:#9aa18d; --accent:#5B7553; --onAccent:#FFFFFF; --track:#E4E8DC; --warm:#C97B5A; --ringTrack:#DDE2D3; --card2:#F4F6EF; }
+  .scroll{ position:absolute; top:0; left:0; right:0; bottom:0; overflow-y:auto; overflow-x:hidden; scrollbar-width:none; -ms-overflow-style:none; padding-top:env(safe-area-inset-top,0px); }
+  .scroll::-webkit-scrollbar{ display:none; }
+  .baht{ font-family:'IBM Plex Sans Thai',sans-serif; font-weight:500; margin-right:.18em; }
+  .pad{ padding:14px 22px calc(120px + env(safe-area-inset-bottom,0px)); }
+  .tabbar{ position:absolute; left:0; right:0; bottom:0; display:flex; align-items:flex-start; justify-content:space-around; padding:12px 24px calc(10px + env(safe-area-inset-bottom,0px)); background:linear-gradient(transparent, var(--bg) 34%); z-index:50; }
+  .tab{ display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; width:54px; font-size:10.5px; font-weight:500; padding-top:6px; }
+  .fab{ width:60px; height:60px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; cursor:pointer; margin-top:-12px; box-shadow:0 10px 24px -6px color-mix(in srgb, var(--accent) 60%, transparent); transition:transform .15s ease; }
+  .fab:active{ transform:scale(.92); }
+  .press{ transition:transform .12s ease, background .2s ease; cursor:pointer; }
+  .press:active{ transform:scale(.97); }
+  .key{ height:58px; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-size:26px; font-weight:500; color:var(--text); border-radius:18px; cursor:pointer; transition:background .15s; }
+  .key:active{ background:var(--track); }
+</style>
+</helmet>
+
+<div class="stage">
+  <div class="app {{ themeClass }}">
+    <div class="scroll">
+      <!-- ============ HOME ============ -->
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+        <div class="pad">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:14px; color:var(--mute);">{{ greeting }}</div>
+              <div style="font-size:20px; font-weight:600; color:var(--text); margin-top:1px;">{{ dateLabel }}</div>
+            </div>
+            <div class="press" onClick="{{ toggleTheme }}" style="width:40px; height:40px; border-radius:50%; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--text);">
+              <sc-if value="{{ isDark }}" hint-placeholder-val="{{ true }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+              </sc-if>
+              <sc-if value="{{ isLight }}" hint-placeholder-val="{{ false }}">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+              </sc-if>
+            </div>
+          </div>
+
+          <!-- ring -->
+          <div style="display:flex; justify-content:center; margin-top:20px;">
+            <div style="position:relative; width:236px; height:236px;">
+              <svg width="236" height="236" viewBox="0 0 236 236">
+                <circle cx="118" cy="118" r="100" fill="none" stroke="var(--ringTrack)" stroke-width="15"/>
+                <circle cx="118" cy="118" r="100" fill="none" stroke="{{ ringColor }}" stroke-width="15" stroke-linecap="round" stroke-dasharray="628.3" stroke-dashoffset="{{ ringOffset }}" transform="rotate(-90 118 118)" style="transition:stroke-dashoffset .5s ease;"/>
+              </svg>
+              <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <div style="font-size:13px; color:var(--mute);">ใช้ได้วันนี้</div>
+                <div class="num" style="font-size:54px; font-weight:600; color:var(--text); line-height:1; margin-top:5px;"><span class="baht" style="font-size:.7em;">฿</span>{{ dailyRemain }}</div>
+                <div style="font-size:13px; color:{{ subColor }}; margin-top:5px;">{{ dailySub }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- streak strip -->
+          <div class="press" onClick="{{ goProfile }}" style="display:flex; align-items:center; justify-content:space-between; margin-top:8px; background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:14px 16px;">
+            <div style="display:flex; align-items:center; gap:11px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--warm)"><path d="M12 2c1 3-1.5 4.5-1.5 7 0 1.4 1 2.2 1 2.2s.8-1 .6-2.6c1.8 1.2 3.4 3.2 3.4 5.6a5.5 5.5 0 1 1-11 0c0-2.7 2-4.4 2.5-6.4C9 7 10.5 4.5 12 2z"/></svg>
+              <div style="font-size:14px; color:var(--text);">บันทึกต่อเนื่อง <span style="color:var(--warm); font-weight:700;">{{ streakCount }} วัน</span></div>
+            </div>
+            <div style="display:flex; gap:4px;">
+              <sc-for list="{{ streakDots }}" as="dot" hint-placeholder-count="7">
+                <span style="width:8px; height:20px; border-radius:4px; background:{{ dot.c }};"></span>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- savings goal / cta -->
+          <sc-if value="{{ hasGoal }}" hint-placeholder-val="{{ true }}">
+            <div class="press" onClick="{{ goGoals }}" style="margin-top:12px; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:18px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-size:15px; font-weight:600; color:var(--text);">เป้าหมาย · {{ topGoal.title }}</div>
+                <div class="num" style="font-size:15px; font-weight:600; color:var(--accent);">{{ topGoal.pct }}%</div>
+              </div>
+              <div style="height:8px; background:var(--track); border-radius:100px; margin-top:14px; overflow:hidden;"><div style="height:100%; width:{{ topGoal.pct }}%; background:var(--accent); border-radius:100px;"></div></div>
+              <div style="font-size:12.5px; color:var(--faint); margin-top:10px;"><span class="num">{{ topGoal.cur }}</span> จาก <span class="num">{{ topGoal.target }}</span> · เหลืออีก <span class="num">{{ topGoal.left }}</span></div>
+            </div>
+          </sc-if>
+
+          <!-- recent -->
+          <div style="display:flex; justify-content:space-between; align-items:center; margin:24px 4px 12px;">
+            <div style="font-size:16px; font-weight:600; color:var(--text);">รายการล่าสุด</div>
+            <div class="press" onClick="{{ goHistory }}" style="font-size:13px; color:var(--mute);">ดูทั้งหมด ›</div>
+          </div>
+          <sc-if value="{{ hasTx }}" hint-placeholder-val="{{ true }}">
+            <sc-for list="{{ recentTx }}" as="tx" hint-placeholder-count="3">
+              <div style="display:flex; align-items:center; gap:13px; padding:11px 2px;">
+                <div style="width:42px; height:42px; border-radius:13px; background:{{ tx.color }}; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#fff; font-weight:600; font-size:16px;">{{ tx.mono }}</div>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:15px; font-weight:500; color:var(--text);">{{ tx.title }}</div>
+                  <div style="font-size:12.5px; color:var(--faint); margin-top:2px;">{{ tx.meta }}</div>
+                </div>
+                <div class="num" style="font-size:16px; font-weight:600; color:{{ tx.amtColor }};">{{ tx.amt }}</div>
+              </div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ noTx }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center; padding:30px 20px; background:var(--surface); border:1px dashed var(--border); border-radius:20px;">
+              <div style="font-size:15px; color:var(--text); font-weight:600;">ยังไม่มีรายการ</div>
+              <div style="font-size:13px; color:var(--mute); margin-top:6px; line-height:1.5;">แตะปุ่ม + ด้านล่างเพื่อบันทึกรายการแรก<br>หรือใส่ข้อมูลตัวอย่างได้ในหน้าโปรไฟล์</div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ============ ADD ============ -->
+      <sc-if value="{{ isAdd }}" hint-placeholder-val="{{ false }}">
+        <div style="min-height:100%; display:flex; flex-direction:column; padding:14px 22px calc(22px + env(safe-area-inset-bottom,0px));">
+
+          <!-- STEP 1 -->
+          <sc-if value="{{ addStep1 }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex; flex-direction:column; min-height:calc(100dvh - 36px); flex:1;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div class="press" onClick="{{ onBack }}" style="width:38px; height:38px; border-radius:50%; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--text);">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                </div>
+                <div style="font-size:16px; font-weight:600; color:var(--text);">เพิ่มรายการ</div>
+                <div style="width:38px;"></div>
+              </div>
+
+              <div style="display:flex; gap:6px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:5px; margin-top:18px;">
+                <div class="press" onClick="{{ setExpense }}" style="flex:1; text-align:center; padding:10px; border-radius:10px; font-size:14px; font-weight:600; background:{{ typeExpenseBg }}; color:{{ typeExpenseTx }};">รายจ่าย</div>
+                <div class="press" onClick="{{ setIncome }}" style="flex:1; text-align:center; padding:10px; border-radius:10px; font-size:14px; font-weight:600; background:{{ typeIncomeBg }}; color:{{ typeIncomeTx }};">รายรับ</div>
+              </div>
+
+              <div style="text-align:center; margin-top:24px;">
+                <div style="font-size:13px; color:var(--mute);">จำนวนเงิน</div>
+                <div class="num" style="font-size:58px; font-weight:600; color:var(--text); line-height:1.1; margin-top:2px;"><span class="baht" style="font-size:.7em;">฿</span>{{ amtDisplay }}</div>
+              </div>
+
+              <sc-if value="{{ isExpense }}" hint-placeholder-val="{{ true }}">
+                <div style="font-size:13px; color:var(--mute); margin:16px 2px 10px;">หมวดหมู่</div>
+                <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:4px;">
+                  <sc-for list="{{ catList }}" as="c" hint-placeholder-count="6">
+                    <div class="press" onClick="{{ c.onPress }}" style="display:flex; flex-direction:column; align-items:center; gap:6px; flex-shrink:0; width:62px;">
+                      <div style="width:50px; height:50px; border-radius:16px; background:{{ c.color }}; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; font-size:17px; box-shadow:0 0 0 2px {{ c.ring }};">{{ c.mono }}</div>
+                      <div style="font-size:11px; color:var(--mute); white-space:nowrap;">{{ c.label }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+
+              <div style="flex:1; min-height:14px;"></div>
+
+              <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:4px;">
+                <sc-for list="{{ keys }}" as="k" hint-placeholder-count="12">
+                  <div class="key press" onClick="{{ k.onPress }}">{{ k.label }}</div>
+                </sc-for>
+              </div>
+
+              <div class="press" onClick="{{ onNext }}" style="margin-top:12px; background:{{ nextBtnBg }}; color:{{ nextBtnTx }}; border-radius:100px; padding:17px; text-align:center; font-size:16px; font-weight:700;">{{ nextLabel }}</div>
+            </div>
+          </sc-if>
+
+          <!-- STEP 2 -->
+          <sc-if value="{{ addStep2 }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; min-height:calc(100dvh - 36px); flex:1;">
+              <div style="display:flex; align-items:center; justify-content:space-between;">
+                <div class="press" onClick="{{ onBack }}" style="width:38px; height:38px; border-radius:50%; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--text);">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </div>
+                <div style="font-size:16px; font-weight:600; color:var(--text);">ฉุกคิดก่อนจ่าย</div>
+                <div style="width:38px;"></div>
+              </div>
+
+              <div style="text-align:center; margin-top:24px;">
+                <div class="num" style="font-size:46px; font-weight:600; color:var(--text);"><span class="baht" style="font-size:.72em;">฿</span>{{ amtDisplay }}</div>
+                <div style="font-size:14px; color:var(--mute); margin-top:2px;">{{ selectedCatLabel }}</div>
+              </div>
+
+              <div style="font-size:17px; font-weight:600; color:var(--text); margin:28px 2px 4px;">ก่อนจ่าย ลองถามใจตัวเองดู</div>
+              <div style="font-size:13.5px; color:var(--mute); margin-bottom:14px;">นี่คือเหตุผลที่อยากจ่ายเงินก้อนนี้?</div>
+
+              <div style="display:flex; flex-direction:column; gap:9px;">
+                <sc-for list="{{ reasons }}" as="r" hint-placeholder-count="5">
+                  <div class="press" onClick="{{ r.onSelect }}" style="display:flex; align-items:center; gap:13px; background:var(--surface); border:1.5px solid {{ r.ring }}; border-radius:15px; padding:14px 15px;">
+                    <div style="flex:1;">
+                      <div style="font-size:15px; font-weight:500; color:var(--text);">{{ r.label }}</div>
+                      <div style="font-size:12px; color:var(--faint); margin-top:1px;">{{ r.sub }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+
+              <sc-if value="{{ showNudge }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:16px; background:color-mix(in srgb, var(--warm) 14%, transparent); border:1px solid color-mix(in srgb, var(--warm) 35%, transparent); border-radius:16px; padding:16px;">
+                  <div style="display:flex; align-items:center; gap:9px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warm)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                    <div style="font-size:14px; font-weight:600; color:var(--text);">ลองหยุดคิดสัก 24 ชม.?</div>
+                  </div>
+                  <div style="font-size:13px; color:var(--mute); margin-top:8px; line-height:1.5;">ของที่ "แค่อยากได้" ส่วนใหญ่พอผ่านไป 1 วันก็ไม่อยากแล้ว ลองหยุดคิดดูก่อนนะ</div>
+                </div>
+              </sc-if>
+
+              <div style="flex:1; min-height:18px;"></div>
+
+              <div class="press" onClick="{{ onConfirm }}" style="background:{{ confirmBg }}; color:{{ confirmTx }}; border-radius:100px; padding:17px; text-align:center; font-size:16px; font-weight:700; margin-top:14px;">ยืนยันบันทึก</div>
+            </div>
+          </sc-if>
+
+          <!-- STEP 3 -->
+          <sc-if value="{{ addStep3 }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:calc(100dvh - 36px); flex:1; text-align:center;">
+              <div style="width:96px; height:96px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center;">
+                <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <div style="font-size:24px; font-weight:700; color:var(--text); margin-top:24px;">บันทึกแล้ว!</div>
+              <div class="num" style="font-size:34px; font-weight:600; color:var(--text); margin-top:6px;"><span class="baht" style="font-size:.74em;">฿</span>{{ savedAmt }}</div>
+              <div style="font-size:14px; color:var(--mute); margin-top:10px; line-height:1.5; max-width:250px;">{{ savedMsg }}</div>
+              <div style="display:flex; align-items:center; gap:8px; margin-top:18px; background:var(--surface); border:1px solid var(--border); border-radius:100px; padding:9px 16px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--warm)"><path d="M12 2c1 3-1.5 4.5-1.5 7 0 1.4 1 2.2 1 2.2s.8-1 .6-2.6c1.8 1.2 3.4 3.2 3.4 5.6a5.5 5.5 0 1 1-11 0c0-2.7 2-4.4 2.5-6.4C9 7 10.5 4.5 12 2z"/></svg>
+                <span style="font-size:13px; color:var(--text); font-weight:600;">บันทึกต่อเนื่อง {{ streakCount }} วัน</span>
+              </div>
+              <div class="press" onClick="{{ onFinish }}" style="margin-top:40px; background:var(--accent); color:var(--onAccent); border-radius:100px; padding:16px 60px; font-size:16px; font-weight:700;">เสร็จสิ้น</div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ============ HISTORY ============ -->
+      <sc-if value="{{ isHistory }}" hint-placeholder-val="{{ false }}">
+        <div class="pad">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="press" onClick="{{ goHome }}" style="width:38px; height:38px; border-radius:50%; background:var(--surface); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--text);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </div>
+            <div style="font-size:20px; font-weight:700; color:var(--text);">ประวัติรายการ</div>
+          </div>
+
+          <sc-if value="{{ hasTx }}" hint-placeholder-val="{{ true }}">
+            <sc-for list="{{ historyGroups }}" as="g" hint-placeholder-count="3">
+              <div style="margin-top:22px;">
+                <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+                  <div style="font-size:13px; font-weight:600; color:var(--mute);">{{ g.label }}</div>
+                  <div class="num" style="font-size:13px; color:var(--faint);">{{ g.total }}</div>
+                </div>
+                <div style="background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:4px 14px;">
+                  <sc-for list="{{ g.items }}" as="tx" hint-placeholder-count="3">
+                    <div style="display:flex; align-items:center; gap:13px; padding:12px 0;">
+                      <div style="width:40px; height:40px; border-radius:12px; background:{{ tx.color }}; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; font-size:15px; flex-shrink:0;">{{ tx.mono }}</div>
+                      <div style="flex:1; min-width:0;">
+                        <div style="font-size:14.5px; font-weight:500; color:var(--text);">{{ tx.title }}</div>
+                        <div style="font-size:12px; color:var(--faint); margin-top:1px;">{{ tx.time }}</div>
+                      </div>
+                      <div class="num" style="font-size:15px; font-weight:600; color:{{ tx.amtColor }};">{{ tx.amt }}</div>
+                      <div class="press" onClick="{{ tx.onDelete }}" style="width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:var(--faint); flex-shrink:0;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ noTx }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center; padding:40px 20px; margin-top:20px; background:var(--surface); border:1px dashed var(--border); border-radius:20px;">
+              <div style="font-size:15px; color:var(--text); font-weight:600;">ยังไม่มีประวัติ</div>
+              <div style="font-size:13px; color:var(--mute); margin-top:6px;">รายการที่บันทึกจะแสดงที่นี่</div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ============ STATS ============ -->
+      <sc-if value="{{ isStats }}" hint-placeholder-val="{{ false }}">
+        <div class="pad">
+          <div style="font-size:24px; font-weight:700; color:var(--text);">สถิติ</div>
+
+          <div style="margin-top:16px; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:20px;">
+            <div style="font-size:13px; color:var(--mute);">ใช้จ่ายเดือนนี้</div>
+            <div style="display:flex; align-items:baseline; gap:8px; margin-top:3px;">
+              <div class="num" style="font-size:38px; font-weight:600; color:var(--text);"><span class="baht" style="font-size:.6em;">฿</span>{{ monthSpent }}</div>
+              <div style="font-size:14px; color:var(--faint);">/ ฿{{ monthBudget }}</div>
+            </div>
+            <div style="height:8px; background:var(--track); border-radius:100px; margin-top:14px; overflow:hidden;"><div style="height:100%; width:{{ monthPct }}%; background:{{ ringColor }}; border-radius:100px;"></div></div>
+            <div style="display:flex; justify-content:space-between; font-size:12.5px; color:var(--faint); margin-top:9px;"><span>ใช้ไป {{ monthPct }}% ของงบเดือน</span><span style="color:var(--accent);">{{ monthLeftLabel }}</span></div>
+          </div>
+
+          <sc-if value="{{ hasTx }}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top:14px; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:20px;">
+              <div style="font-size:15px; font-weight:600; color:var(--text);">รายจ่ายราย 7 วัน</div>
+              <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:9px; height:120px; margin-top:18px;">
+                <sc-for list="{{ weekBars }}" as="b" hint-placeholder-count="7">
+                  <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; height:100%; justify-content:flex-end;">
+                    <div style="width:100%; max-width:22px; height:{{ b.h }}; min-height:4px; background:{{ b.fill }}; border-radius:7px;"></div>
+                    <div style="font-size:11px; color:{{ b.lblColor }};">{{ b.d }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <sc-if value="{{ hasCat }}" hint-placeholder-val="{{ true }}">
+              <div style="margin-top:14px; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:20px;">
+                <div style="font-size:15px; font-weight:600; color:var(--text); margin-bottom:6px;">จ่ายไปกับอะไรบ้าง</div>
+                <sc-for list="{{ catBreakdown }}" as="c" hint-placeholder-count="4">
+                  <div style="padding:11px 0;">
+                    <div style="display:flex; align-items:center; gap:9px; margin-bottom:8px;">
+                      <span style="width:9px; height:9px; border-radius:50%; background:{{ c.color }};"></span>
+                      <span style="flex:1; font-size:14px; color:var(--text);">{{ c.label }}</span>
+                      <span class="num" style="font-size:13.5px; color:var(--mute);">฿{{ c.amt }}</span>
+                      <span class="num" style="font-size:13px; color:var(--faint); width:34px; text-align:right;">{{ c.pct }}%</span>
+                    </div>
+                    <div style="height:6px; background:var(--track); border-radius:100px; overflow:hidden;"><div style="height:100%; width:{{ c.pct }}%; background:{{ c.color }}; border-radius:100px;"></div></div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </sc-if>
+          <sc-if value="{{ noTx }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center; padding:40px 20px; margin-top:14px; background:var(--surface); border:1px dashed var(--border); border-radius:20px;">
+              <div style="font-size:15px; color:var(--text); font-weight:600;">ยังไม่มีข้อมูลสถิติ</div>
+              <div style="font-size:13px; color:var(--mute); margin-top:6px;">บันทึกรายการเพื่อดูภาพรวมการใช้จ่าย</div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ============ GOALS ============ -->
+      <sc-if value="{{ isGoals }}" hint-placeholder-val="{{ false }}">
+        <div class="pad">
+          <div style="font-size:24px; font-weight:700; color:var(--text);">เป้าหมายเก็บเงิน</div>
+
+          <div style="margin-top:16px; background:var(--accent); border-radius:20px; padding:20px; color:var(--onAccent);">
+            <div style="font-size:13px; opacity:.8;">ออมไปแล้วทั้งหมด</div>
+            <div class="num" style="font-size:36px; font-weight:700; margin-top:2px;"><span class="baht" style="font-size:.6em;">฿</span>{{ totalSaved }}</div>
+            <div style="font-size:13px; opacity:.8; margin-top:4px;">จาก {{ goalCount }} เป้าหมาย</div>
+          </div>
+
+          <sc-for list="{{ goals }}" as="g" hint-placeholder-count="2">
+            <div style="margin-top:14px; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:18px;">
+              <div style="display:flex; gap:16px; align-items:center;">
+                <div style="position:relative; width:74px; height:74px; flex-shrink:0;">
+                  <svg width="74" height="74" viewBox="0 0 74 74">
+                    <circle cx="37" cy="37" r="31" fill="none" stroke="var(--track)" stroke-width="7"/>
+                    <circle cx="37" cy="37" r="31" fill="none" stroke="{{ g.color }}" stroke-width="7" stroke-linecap="round" stroke-dasharray="194.8" stroke-dashoffset="{{ g.offset }}" transform="rotate(-90 37 37)"/>
+                  </svg>
+                  <div class="num" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:600; color:var(--text);">{{ g.pct }}%</div>
+                </div>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:16px; font-weight:600; color:var(--text);">{{ g.title }}</div>
+                  <div class="num" style="font-size:13.5px; color:var(--mute); margin-top:3px;">{{ g.cur }} / {{ g.target }}</div>
+                  <div style="font-size:12px; color:var(--faint); margin-top:4px;">{{ g.note }}</div>
+                </div>
+              </div>
+              <div class="press" onClick="{{ g.onAdd }}" style="margin-top:14px; background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent); border-radius:100px; padding:11px; text-align:center; font-size:14px; font-weight:700;">+ ออมเพิ่ม ฿500</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- ============ PROFILE ============ -->
+      <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+        <div class="pad">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="font-size:24px; font-weight:700; color:var(--text);">โปรไฟล์</div>
+            <div class="press" onClick="{{ toggleTheme }}" style="display:flex; align-items:center; gap:7px; background:var(--surface); border:1px solid var(--border); border-radius:100px; padding:8px 14px; color:var(--text);">
+              <sc-if value="{{ isDark }}" hint-placeholder-val="{{ true }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></sc-if>
+              <sc-if value="{{ isLight }}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></sc-if>
+              <span style="font-size:12.5px; font-weight:500;">ธีม</span>
+            </div>
+          </div>
+
+          <div style="margin-top:16px; display:flex; align-items:center; gap:15px;">
+            <div style="width:64px; height:64px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; color:var(--onAccent);">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+            </div>
+            <div>
+              <div style="font-size:20px; font-weight:700; color:var(--text);">บัญชีของฉัน</div>
+              <div style="display:inline-flex; align-items:center; gap:6px; margin-top:4px; background:color-mix(in srgb, var(--warm) 16%, transparent); border-radius:100px; padding:4px 11px;">
+                <span style="width:7px; height:7px; border-radius:50%; background:var(--warm);"></span>
+                <span style="font-size:12px; color:var(--text); font-weight:600;">{{ levelName }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:18px;">
+            <div style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:14px;">
+              <div class="num" style="font-size:24px; font-weight:700; color:var(--warm);">{{ streakCount }}</div>
+              <div style="font-size:11.5px; color:var(--mute); margin-top:2px;">วันติดต่อกัน</div>
+            </div>
+            <div style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:14px;">
+              <div class="num" style="font-size:24px; font-weight:700; color:var(--text);">{{ totalSavedShort }}</div>
+              <div style="font-size:11.5px; color:var(--mute); margin-top:2px;">ออมสะสม</div>
+            </div>
+            <div style="flex:1; background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:14px;">
+              <div class="num" style="font-size:24px; font-weight:700; color:var(--text);">{{ noSpendDays }}</div>
+              <div style="font-size:11.5px; color:var(--mute); margin-top:2px;">วันไม่จ่าย</div>
+            </div>
+          </div>
+
+          <!-- daily budget setting -->
+          <div style="margin-top:14px; background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:16px;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div>
+                <div style="font-size:15px; font-weight:600; color:var(--text);">งบใช้จ่ายต่อวัน</div>
+                <div style="font-size:12px; color:var(--faint); margin-top:2px;">ตั้งวงเงินที่ใช้ได้ในแต่ละวัน</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div class="press" onClick="{{ budgetMinus }}" style="width:34px; height:34px; border-radius:50%; background:var(--track); display:flex; align-items:center; justify-content:center; color:var(--text); font-size:20px; font-weight:600;">−</div>
+                <div class="num" style="font-size:18px; font-weight:700; color:var(--text); min-width:64px; text-align:center;">฿{{ dailyBudget }}</div>
+                <div class="press" onClick="{{ budgetPlus }}" style="width:34px; height:34px; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; color:var(--onAccent); font-size:20px; font-weight:600;">+</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- challenge -->
+          <div style="margin-top:14px; background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:16px;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="font-size:15px; font-weight:600; color:var(--text);">ชาเลนจ์ที่กำลังทำ</div>
+              <span style="font-size:11px; color:var(--accent); background:color-mix(in srgb, var(--accent) 16%, transparent); border-radius:100px; padding:3px 9px; font-weight:600;">กำลังทำ</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px; margin-top:13px;">
+              <div style="width:44px; height:44px; border-radius:13px; background:color-mix(in srgb, var(--warm) 18%, transparent); display:flex; align-items:center; justify-content:center;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--warm)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>
+              </div>
+              <div style="flex:1;">
+                <div style="font-size:14.5px; font-weight:500; color:var(--text);">No-spend Weekend</div>
+                <div style="font-size:12px; color:var(--faint); margin-top:1px;">ไม่ใช้เงินฟุ่มเฟือยช่วงสุดสัปดาห์</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- achievements -->
+          <div style="font-size:16px; font-weight:600; color:var(--text); margin:24px 2px 12px;">รางวัล</div>
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+            <sc-for list="{{ badges }}" as="b" hint-placeholder-count="6">
+              <div style="background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:14px 8px; text-align:center;">
+                <div style="width:46px; height:46px; border-radius:50%; background:{{ b.medalBg }}; display:flex; align-items:center; justify-content:center; margin:0 auto;">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="{{ b.tone }}"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.3 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+                </div>
+                <div style="font-size:11.5px; color:var(--mute); margin-top:8px; line-height:1.3;">{{ b.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <!-- data controls -->
+          <div style="margin-top:22px; display:flex; flex-direction:column; gap:10px;">
+            <div class="press" onClick="{{ onSeed }}" style="background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:14px 16px; font-size:14px; font-weight:600; color:var(--text); display:flex; align-items:center; justify-content:space-between;">
+              <span>ใส่ข้อมูลตัวอย่าง</span>
+              <span style="color:var(--faint); font-size:12px;">ลองเล่นก่อน</span>
+            </div>
+            <div class="press" onClick="{{ onReset }}" style="background:transparent; border:1px solid var(--border); border-radius:14px; padding:14px 16px; font-size:14px; font-weight:600; color:#E0795B; text-align:center;">ล้างข้อมูลทั้งหมด</div>
+          </div>
+
+          <div style="text-align:center; font-size:11px; color:var(--faint); margin-top:18px; line-height:1.6;">ออมมือ · ข้อมูลถูกเก็บไว้ในเครื่องของคุณเท่านั้น<br>เพิ่มลงหน้าจอโฮมเพื่อใช้เหมือนแอป</div>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- ============ TAB BAR ============ -->
+    <sc-if value="{{ notAdd }}" hint-placeholder-val="{{ true }}">
+      <div class="tabbar">
+        <div class="tab press" onClick="{{ goHome }}" style="color:{{ tintHome }};">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
+          <span>หน้าแรก</span>
+        </div>
+        <div class="tab press" onClick="{{ goStats }}" style="color:{{ tintStats }};">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+          <span>สถิติ</span>
+        </div>
+        <div class="fab press" onClick="{{ goAdd }}">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--onAccent)" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </div>
+        <div class="tab press" onClick="{{ goGoals }}" style="color:{{ tintGoals }};">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.6" fill="currentColor"/></svg>
+          <span>เป้าหมาย</span>
+        </div>
+        <div class="tab press" onClick="{{ goProfile }}" style="color:{{ tintProfile }};">
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+          <span>โปรไฟล์</span>
+        </div>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  KEY = 'aommeu_v1';
+  months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  wdays = ['อา','จ','อ','พ','พฤ','ศ','ส'];
+
+  cats = [
+    { key:'food', label:'อาหาร', color:'#E0795B', mono:'อ' },
+    { key:'cafe', label:'คาเฟ่', color:'#C8956D', mono:'ค' },
+    { key:'travel', label:'เดินทาง', color:'#6FA8C7', mono:'ท' },
+    { key:'shop', label:'ช้อปปิ้ง', color:'#B98BC9', mono:'ช' },
+    { key:'fun', label:'บันเทิง', color:'#E0A458', mono:'บ' },
+    { key:'bill', label:'บิล', color:'#7C9CC4', mono:'บ' },
+    { key:'health', label:'สุขภาพ', color:'#6FB89A', mono:'ส' },
+    { key:'other', label:'อื่นๆ', color:'#9a9a9a', mono:'…' },
+  ];
+
+  state = {
+    theme: this.initTheme(),
+    screen: 'home', addStep: 1, amount: '', txType: 'expense', category: null, reason: null,
+    savedAmt: '0', data: this.initData(),
+  };
+
+  defaultData(){
+    return {
+      dailyBudget: 500,
+      transactions: [],
+      goals: [
+        { id:'g1', title:'ทริปในฝัน', color:'#6FA8C7', target:50000, saved:0, note:'เก็บไว้เที่ยวให้รางวัลตัวเอง' },
+        { id:'g2', title:'กองทุนฉุกเฉิน', color:'#6FB89A', target:100000, saved:0, note:'สำรองเผื่อเหตุไม่คาดฝัน' },
+      ],
+      streak: { count:0, lastDay:null },
+    };
+  }
+  initData(){ try{ const d=JSON.parse(localStorage.getItem(this.KEY)); if(d&&d.transactions) return d; }catch(e){} return this.defaultData(); }
+  initTheme(){ try{ return localStorage.getItem(this.KEY+'_theme')||'dark'; }catch(e){} return 'dark'; }
+  save(d){ try{ localStorage.setItem(this.KEY, JSON.stringify(d)); }catch(e){} }
+  update(mut){ this.setState(s=>{ const d=JSON.parse(JSON.stringify(s.data)); mut(d); this.save(d); return { data:d }; }); }
+
+  themes = {
+    dark: { surface:'#141416', border:'#1f1f22', text:'#F2F2F0', mute:'#8d8d92', faint:'#6e6e72', accent:'#C8F751', onAccent:'#0B0B0C', track:'#222226', warm:'#C8F751', card2:'#101012' },
+    sage: { surface:'#FFFFFF', border:'rgba(0,0,0,.06)', text:'#2E332B', mute:'#7c8473', faint:'#9aa18d', accent:'#5B7553', onAccent:'#FFFFFF', track:'#E4E8DC', warm:'#C97B5A', card2:'#F4F6EF' },
+  };
+
+  go(screen){ this.setState({ screen }); }
+  toggleTheme = () => this.setState(s=>{ const theme=s.theme==='dark'?'sage':'dark'; try{localStorage.setItem(this.KEY+'_theme',theme);}catch(e){} return {theme}; });
+
+  fmt(n){ return Number(Math.round(n)).toLocaleString('en-US'); }
+  short(n){ n=Math.round(n); if(n>=1000) return '฿'+(n/1000).toFixed(n%1000===0?0:1)+'k'; return '฿'+n; }
+  dayKey(ts){ const d=new Date(ts); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+  todayKey(){ return this.dayKey(Date.now()); }
+  thaiDate(ts){ const d=new Date(ts); return d.getDate()+' '+this.months[d.getMonth()]; }
+  relLabel(ts){ const k=this.dayKey(ts); if(k===this.todayKey()) return 'วันนี้'; if(k===this.dayKey(Date.now()-86400000)) return 'เมื่อวาน'; return this.thaiDate(ts); }
+  timeStr(ts){ const d=new Date(ts); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+
+  press(k){ this.setState(s=>{ let a=s.amount; if(k==='del') a=a.slice(0,-1); else if(k==='.'){ if(!a.includes('.')) a=(a||'0')+'.'; } else { const digits=a.replace('.',''); if(digits.length>=7) return {}; if(a==='0') a=k; else a+=k; } return { amount:a }; }); }
+  fmtAmt(s){ if(!s||s==='0') return '0'; const p=s.split('.'); const i=Number(p[0]||0).toLocaleString('en-US'); return p.length>1 ? i+'.'+p[1] : i; }
+  setType(tp){ this.setState({ txType:tp, category: tp==='income' ? 'income' : null }); }
+  pickCat(key){ this.setState({ category:key }); }
+  chooseReason(r){ this.setState({ reason:r }); }
+
+  commit(){
+    const amount = Number(this.state.amount)||0;
+    if(amount<=0) return;
+    const cat = this.state.txType==='income' ? 'income' : this.state.category;
+    if(!cat) return;
+    const tx = { id:'t'+Date.now()+Math.random().toString(36).slice(2,5), type:this.state.txType, cat, amount, ts:Date.now() };
+    this.update(d=>{
+      d.transactions.unshift(tx);
+      const today=this.todayKey();
+      if(d.streak.lastDay!==today){
+        const y=this.dayKey(Date.now()-86400000);
+        d.streak.count = d.streak.lastDay===y ? (d.streak.count+1) : 1;
+        d.streak.lastDay = today;
+      }
+    });
+    this.setState({ addStep:3, savedAmt:this.fmtAmt(this.state.amount) });
+  }
+  nextFromAmount(){ const a=Number(this.state.amount)||0; if(a<=0) return; if(this.state.txType==='expense'){ if(!this.state.category) return; this.setState({ addStep:2 }); } else { this.commit(); } }
+  confirmAdd(){ this.commit(); }
+  addBack(){ this.setState(s=>{ if(s.addStep>1) return { addStep:s.addStep-1 }; return { screen:'home', amount:'', category:null, reason:null }; }); }
+  finishAdd(){ this.setState({ screen:'home', addStep:1, amount:'', category:null, reason:null, txType:'expense' }); }
+
+  deleteTx(id){ this.update(d=>{ d.transactions = d.transactions.filter(t=>t.id!==id); }); }
+  contribute(id){ this.update(d=>{ const g=d.goals.find(x=>x.id===id); if(g) g.saved=Math.min(g.target, g.saved+500); }); }
+  setBudget(delta){ this.update(d=>{ d.dailyBudget=Math.max(50, d.dailyBudget+delta); }); }
+  seedDemo(){
+    const now=Date.now(), day=86400000;
+    const mk=(type,cat,amount,da,h,m)=>{ const dt=new Date(now-da*day); dt.setHours(h,m,0,0); return { id:'t'+dt.getTime()+Math.random().toString(36).slice(2,5), type, cat, amount, ts:dt.getTime() }; };
+    const txs=[ mk('income','income',28000,1,9,0), mk('expense','cafe',95,0,8,15), mk('expense','food',80,0,12,30),
+      mk('expense','food',240,1,19,40), mk('expense','travel',35,1,8,15), mk('expense','shop',165,2,12,20),
+      mk('expense','bill',420,2,10,0), mk('expense','food',90,3,12,30), mk('expense','cafe',102,4,7,50), mk('expense','fun',300,5,20,0) ];
+    this.update(d=>{ d.transactions=txs.sort((a,b)=>b.ts-a.ts); if(d.goals[0])d.goals[0].saved=32000; if(d.goals[1])d.goals[1].saved=40000; d.streak={count:5,lastDay:this.todayKey()}; });
+  }
+  resetAll(){ if(typeof confirm==='function' && !confirm('ล้างข้อมูลทั้งหมด? การกระทำนี้ย้อนกลับไม่ได้')) return; const d=this.defaultData(); this.save(d); this.setState({ data:d, screen:'home' }); }
+
+  renderVals(){
+    const t = this.themes[this.state.theme];
+    const isDark = this.state.theme==='dark';
+    const scr = this.state.screen;
+    const is = s => scr===s;
+    const tint = s => scr===s ? t.accent : t.faint;
+    const d = this.state.data;
+    const txns = d.transactions;
+    const incomeColor = t.accent;
+
+    // greeting + date
+    const h = new Date().getHours();
+    const greeting = h<11 ? 'สวัสดีตอนเช้า' : h<16 ? 'สวัสดีตอนบ่าย' : h<19 ? 'สวัสดีตอนเย็น' : 'สวัสดีตอนค่ำ';
+    const nd = new Date();
+    const dateLabel = nd.getDate()+' '+this.months[nd.getMonth()];
+
+    // ---- daily budget / ring ----
+    const today = this.todayKey();
+    const todayExpense = txns.filter(x=>x.type==='expense' && this.dayKey(x.ts)===today).reduce((s,x)=>s+x.amount,0);
+    const budget = d.dailyBudget;
+    const over = todayExpense > budget;
+    const remain = Math.max(0, budget - todayExpense);
+    const dailyPct = budget>0 ? Math.max(0, Math.min(1, remain/budget)) : 0;
+    const ringOffset = (628.3*(1-dailyPct)).toFixed(1);
+    const ringColor = over ? t.warm : t.accent;
+    const dailySub = over ? ('เกินงบวันนี้ ฿'+this.fmt(todayExpense-budget)) : ('ใช้ไป ฿'+this.fmt(todayExpense)+' จาก ฿'+this.fmt(budget));
+    const subColor = over ? t.warm : t.faint;
+
+    // ---- streak ----
+    const streakCount = d.streak.count||0;
+    const streakDots = Array.from({length:7},(_,i)=>({ c: i < Math.min(streakCount,7) ? t.warm : t.track }));
+
+    // ---- tx view ----
+    const view = (x) => {
+      let info;
+      if(x.type==='income') info={ mono:'฿', color:'#8BC97E', label:'รายรับ' };
+      else { const c=this.cats.find(k=>k.key===x.cat)||this.cats[7]; info={ mono:c.mono, color:c.color, label:c.label }; }
+      return { id:x.id, mono:info.mono, color:info.color, title:info.label,
+        amt:(x.type==='income'?'+':'-')+'฿'+this.fmt(x.amount),
+        amtColor: x.type==='income'?incomeColor:t.text,
+        meta: this.relLabel(x.ts)+' · '+this.timeStr(x.ts),
+        time: this.timeStr(x.ts),
+        onDelete: ()=>this.deleteTx(x.id) };
+    };
+    const hasTx = txns.length>0;
+    const recentTx = txns.slice(0,4).map(view);
+
+    // ---- history groups ----
+    const groupsMap = {};
+    txns.forEach(x=>{ const k=this.dayKey(x.ts); (groupsMap[k]=groupsMap[k]||[]).push(x); });
+    const historyGroups = Object.keys(groupsMap).map(k=>{
+      const items=groupsMap[k];
+      const net=items.reduce((s,x)=>s+(x.type==='income'?x.amount:-x.amount),0);
+      return { key:k, ts:items[0].ts, label:this.relLabel(items[0].ts), total:(net>=0?'+':'-')+'฿'+this.fmt(Math.abs(net)), items:items.map(view) };
+    }).sort((a,b)=>b.ts-a.ts);
+
+    // ---- stats ----
+    const now=new Date(); const mo=now.getMonth(), yr=now.getFullYear();
+    const inMonth = x => { const dd=new Date(x.ts); return dd.getMonth()===mo && dd.getFullYear()===yr; };
+    const monthExpenseN = txns.filter(x=>x.type==='expense'&&inMonth(x)).reduce((s,x)=>s+x.amount,0);
+    const daysInMonth = new Date(yr,mo+1,0).getDate();
+    const monthBudgetN = budget*daysInMonth;
+    const monthPct = monthBudgetN>0 ? Math.min(100, Math.round(monthExpenseN/monthBudgetN*100)) : 0;
+    const monthLeft = Math.max(0, monthBudgetN-monthExpenseN);
+    const monthLeftLabel = monthExpenseN>monthBudgetN ? ('เกิน ฿'+this.fmt(monthExpenseN-monthBudgetN)) : ('เหลือ ฿'+this.fmt(monthLeft));
+
+    const dayTotals=[];
+    for(let i=6;i>=0;i--){ const ts=Date.now()-i*86400000; const k=this.dayKey(ts); const sum=txns.filter(x=>x.type==='expense'&&this.dayKey(x.ts)===k).reduce((s,x)=>s+x.amount,0); dayTotals.push({ ts, sum, wd:new Date(ts).getDay(), today:i===0 }); }
+    const maxDay=Math.max(1,...dayTotals.map(x=>x.sum));
+    const weekBars = dayTotals.map(b=>({ d:this.wdays[b.wd], h:Math.round(b.sum/maxDay*100)+'%', fill: b.today ? t.accent : (isDark?'#3a3a3f':'#C5CCBA'), lblColor: b.today ? t.accent : t.faint }));
+
+    const catSums={};
+    txns.filter(x=>x.type==='expense'&&inMonth(x)).forEach(x=>{ catSums[x.cat]=(catSums[x.cat]||0)+x.amount; });
+    const catBreakdown = Object.keys(catSums).map(k=>{ const c=this.cats.find(z=>z.key===k)||this.cats[7]; return { label:c.label, color:c.color, sum:catSums[k], amt:this.fmt(catSums[k]), pct: monthExpenseN>0?Math.round(catSums[k]/monthExpenseN*100):0 }; }).sort((a,b)=>b.sum-a.sum).slice(0,5);
+
+    // ---- goals ----
+    const goals = d.goals.map(g=>{ const pct=g.target>0?Math.min(100,Math.round(g.saved/g.target*100)):0; return {
+      id:g.id, title:g.title, color:g.color, pct, note:g.note,
+      cur:'฿'+this.fmt(g.saved), target:'฿'+this.fmt(g.target), left:'฿'+this.fmt(Math.max(0,g.target-g.saved)),
+      offset:(194.8*(1-pct/100)).toFixed(1), onAdd:()=>this.contribute(g.id) }; });
+    const totalSavedN = d.goals.reduce((s,g)=>s+g.saved,0);
+    const topGoal = goals[0] || null;
+
+    // ---- profile ----
+    const noSpendSet = new Set(txns.filter(x=>x.type==='expense'&&inMonth(x)).map(x=>this.dayKey(x.ts)));
+    const noSpendDays = Math.max(0, now.getDate()-noSpendSet.size);
+    const levelName = totalSavedN>=100000 ? 'นักออมระดับทอง' : totalSavedN>=20000 ? 'นักออมระดับเงิน' : 'นักออมมือใหม่';
+    const anyGoalDone = d.goals.some(g=>g.saved>=g.target && g.target>0);
+    const badgeDefs=[
+      { label:'7 วันติด', color:'#C97B5A', earned:streakCount>=7 },
+      { label:'เริ่มออม', color:'#6FB89A', earned:totalSavedN>0||hasTx },
+      { label:'No-spend 3 วัน', color:'#6FA8C7', earned:noSpendDays>=3 },
+      { label:'30 วันติด', color:'#B98BC9', earned:streakCount>=30 },
+      { label:'ออมครบเป้า', color:'#E0A458', earned:anyGoalDone },
+      { label:'ออม 100k', color:'#8BC97E', earned:totalSavedN>=100000 },
+    ];
+    const badges = badgeDefs.map(b=>({ label:b.label, tone: b.earned?b.color:t.faint, medalBg: b.earned?('color-mix(in srgb, '+b.color+' 22%, transparent)'):t.card2 }));
+
+    // ---- add screen ----
+    const amt=this.state.amount; const amtNum=Number(amt)||0; const isExpense=this.state.txType==='expense';
+    const catList=this.cats.map(c=>({ ...c, ring: this.state.category===c.key ? t.accent : t.border, onPress:()=>this.pickCat(c.key) }));
+    const selCat=this.cats.find(c=>c.key===this.state.category);
+    const selectedCatLabel = isExpense ? (selCat?selCat.label:'') : 'รายรับ';
+    const keys=['1','2','3','4','5','6','7','8','9','.','0','del'].map(k=>({ label:k==='del'?'⌫':k, onPress:()=>this.press(k) }));
+    const reasons=[
+      { key:'need', label:'จำเป็นจริงๆ', sub:'ขาดไม่ได้', impulse:false },
+      { key:'plan', label:'วางแผนไว้แล้ว', sub:'อยู่ในงบ', impulse:false },
+      { key:'want', label:'แค่อยากได้', sub:'ไม่ได้จำเป็น', impulse:true },
+      { key:'mood', label:'อารมณ์/ความเครียด', sub:'ซื้อเพื่อให้รู้สึกดี', impulse:true },
+      { key:'promo', label:'เห็นโปร/ลดราคา', sub:'กลัวพลาด', impulse:true },
+    ].map(r=>({ ...r, ring:this.state.reason===r.key?t.accent:t.border, onSelect:()=>this.chooseReason(r.key) }));
+    const chosen=reasons.find(r=>this.state.reason===r.key);
+    const showNudge=!!(chosen&&chosen.impulse);
+    const canNext = amtNum>0 && (!isExpense || !!this.state.category);
+    const savedMsg = streakCount>1 ? ('เยี่ยมมาก! บันทึกต่อเนื่องมา '+streakCount+' วันแล้ว รักษาวินัยแบบนี้ไว้นะ') : 'เริ่มต้นได้ดีมาก! พรุ่งนี้มาบันทึกต่อเพื่อสร้าง streak กัน';
+
+    return {
+      t, isDark, isLight:!isDark, themeClass: isDark ? '' : 'sage',
+      isHome:is('home'), isStats:is('stats'), isGoals:is('goals'), isProfile:is('profile'),
+      isAdd:is('add'), isHistory:is('history'), notAdd:!is('add'),
+      tintHome:tint('home'), tintStats:tint('stats'), tintGoals:tint('goals'), tintProfile:tint('profile'),
+      goHome:()=>this.go('home'), goStats:()=>this.go('stats'), goGoals:()=>this.go('goals'),
+      goProfile:()=>this.go('profile'), goHistory:()=>this.go('history'),
+      goAdd:()=>this.setState({ screen:'add', addStep:1, amount:'', category:null, reason:null, txType:'expense' }),
+      toggleTheme:this.toggleTheme,
+      // home
+      greeting, dateLabel, dailyRemain:this.fmt(remain), dailySub, subColor, ringOffset, ringColor,
+      streakCount, streakDots, hasTx, noTx:!hasTx, recentTx,
+      hasGoal:!!topGoal, topGoal,
+      // history / stats
+      historyGroups,
+      monthSpent:this.fmt(monthExpenseN), monthBudget:this.fmt(monthBudgetN), monthPct, monthLeftLabel,
+      weekBars, catBreakdown, hasCat:catBreakdown.length>0,
+      // goals
+      goals, totalSaved:this.fmt(totalSavedN), totalSavedShort:this.short(totalSavedN), goalCount:d.goals.length,
+      // profile
+      levelName, noSpendDays, dailyBudget:this.fmt(budget), badges,
+      budgetMinus:()=>this.setBudget(-50), budgetPlus:()=>this.setBudget(50),
+      onSeed:()=>this.seedDemo(), onReset:()=>this.resetAll(),
+      // add
+      amtDisplay:this.fmtAmt(amt), savedAmt:this.state.savedAmt, savedMsg, isExpense,
+      typeExpenseBg: isExpense?t.accent:'transparent', typeExpenseTx: isExpense?t.onAccent:t.mute,
+      typeIncomeBg: !isExpense?t.accent:'transparent', typeIncomeTx: !isExpense?t.onAccent:t.mute,
+      catList, keys, reasons, showNudge, selectedCatLabel,
+      addStep1:this.state.addStep===1, addStep2:this.state.addStep===2, addStep3:this.state.addStep===3,
+      nextLabel: isExpense?'ฉุกคิดก่อนจ่าย ›':'บันทึกรายรับ',
+      nextBtnBg: canNext?t.accent:t.track, nextBtnTx: canNext?t.onAccent:t.faint,
+      setExpense:()=>this.setType('expense'), setIncome:()=>this.setType('income'),
+      onNext:()=>this.nextFromAmount(), onConfirm:()=>this.confirmAdd(), onFinish:()=>this.finishAdd(), onBack:()=>this.addBack(),
+      confirmBg: chosen?t.accent:t.track, confirmTx: chosen?t.onAccent:t.faint,
+    };
+  }
+}
+</script>
+</body>
+</html>

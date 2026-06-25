@@ -1,0 +1,16 @@
+{
+  "name": "ออมมือ — บันทึกรายรับรายจ่าย",
+  "short_name": "ออมมือ",
+  "description": "แอปบันทึกรายรับรายจ่ายที่ช่วยสร้างวินัยทางการเงิน ด้วยงบรายวัน เป้าหมายเก็บเงิน streak และจังหวะฉุกคิดก่อนจ่าย",
+  "lang": "th",
+  "start_url": "./ออมมือ.dc.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0B0B0C",
+  "theme_color": "#0B0B0C",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
